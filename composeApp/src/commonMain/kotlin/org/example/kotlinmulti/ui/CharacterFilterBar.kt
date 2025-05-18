@@ -14,34 +14,35 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterFilterBar(
-    name: String,
-    onNameChange: (String) -> Unit,
-    status: String?,
-    onStatusChange: (String?) -> Unit
+    name: String, //texto de busqueda
+    onNameChange: (String) -> Unit, //callback cuando cambia el texto
+    status: String?, //estado seleccionado o null para todos
+    onStatusChange: (String?) -> Unit //callback cuando cambia el estado
 ) {
+    //estado de scroll para los chips
     val scrollState = rememberScrollState()
 
+    //contenedor principal con estilo de tarjeta
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF5F5F5)
+            containerColor = Color(0xFFF5F5F5)//color de fondo gris claro
         )
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Barra de búsqueda con icono
+            //campo de texto para buscar por nombre
             OutlinedTextField(
                 value = name,
                 onValueChange = onNameChange,
@@ -49,11 +50,13 @@ fun CharacterFilterBar(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 leadingIcon = {
+                    //icono de lupa
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Buscar"
                     )
                 },
+                //boton de limpiar texto
                 trailingIcon = {
                     if (name.isNotEmpty()) {
                         IconButton(onClick = { onNameChange("") }) {
@@ -68,53 +71,54 @@ fun CharacterFilterBar(
                 // Eliminamos la configuración de colores para usar los valores por defecto
             )
 
-            // Selector de estado con colores
+            //fila para selector de estado
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                //etiqueta fija
                 Text(
                     text = "Estado:",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(end = 8.dp)
                 )
 
-                // Hacemos que los chips sean desplazables horizontalmente
+                //contenedor de chips con scroll horizontal
                 Row(
                     modifier = Modifier
                         .horizontalScroll(scrollState)
                         .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Chip para "Todos"
+                    //chip para "Todos"
                     SimpleFilterChip(
                         selected = status == null,
                         onClick = { onStatusChange(null) },
                         label = "Todos"
                     )
 
-                    // Chip para "Vivo"
+                    //chip para "Vivo"
                     SimpleFilterChip(
                         selected = status == "Alive",
                         onClick = { onStatusChange("Alive") },
                         label = "Vivo",
-                        dotColor = Color(0xFF4CAF50)
+                        dotColor = Color(0xFF4CAF50)//punto verde
                     )
 
-                    // Chip para "Muerto"
+                    //chip para "Muerto"
                     SimpleFilterChip(
                         selected = status == "Dead",
                         onClick = { onStatusChange("Dead") },
                         label = "Muerto",
-                        dotColor = Color(0xFFF44336)
+                        dotColor = Color(0xFFF44336)//punto rojo
                     )
 
-                    // Chip para "Desconocido"
+                    //chip para "Desconocido"
                     SimpleFilterChip(
                         selected = status == "unknown",
                         onClick = { onStatusChange("unknown") },
                         label = "Desconocido",
-                        dotColor = Color(0xFF9E9E9E)
+                        dotColor = Color(0xFF9E9E9E)//punto gris
                     )
                 }
             }
@@ -122,26 +126,28 @@ fun CharacterFilterBar(
     }
 }
 
+//composable reutilizable para cada chip de filtro
 @Composable
 fun SimpleFilterChip(
-    selected: Boolean,
-    onClick: () -> Unit,
-    label: String,
-    dotColor: Color? = null
+    selected: Boolean, //si el chip esta activo
+    onClick: () -> Unit, //accion al pulsar
+    label: String, //texto del chip
+    dotColor: Color? = null //color del punto si aplica
 ) {
     Surface(
         modifier = Modifier.height(36.dp),
         onClick = onClick,
-        shape = RoundedCornerShape(50),
+        shape = RoundedCornerShape(50),//esquinas redondas
         color = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.White,
         contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else Color.Black,
-        border = BorderStroke(1.dp, Color.LightGray)
+        border = BorderStroke(1.dp, Color.LightGray)//borde fino gris
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
+            //si hay dotColor, dibuja un punto
             if (dotColor != null) {
                 Box(
                     Modifier
@@ -149,6 +155,7 @@ fun SimpleFilterChip(
                         .background(dotColor, CircleShape)
                 )
             }
+            //texto del chip
             Text(label)
         }
     }
