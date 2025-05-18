@@ -19,17 +19,18 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.example.kotlinmulti.model.Character
 
-// Colores representativos de Rick and Morty
+//Colores usados en la tarjeta de personaje
 object RickAndMortyColors {
-    val PortalGreen = Color(0xFF97CE4C)      // Verde del portal
-    val DarkBlue = Color(0xFF24325F)         // Azul oscuro del espacio
-    val LightBlue = Color(0xFF00B5CC)        // Azul claro del portal
-    val Yellow = Color(0xFFF0E14A)           // Amarillo de las pupilas
-    val BackgroundDark = Color(0xFF262C3A)   // Fondo oscuro
+    val PortalGreen = Color(0xFF97CE4C)    //Verde del portal
+    val DarkBlue = Color(0xFF24325F)       //Azul oscuro de fondo
+    val LightBlue = Color(0xFF00B5CC)      //Azul claro de seccion inferior
+    val Yellow = Color(0xFFF0E14A)         //Amarillo para texto de especie
+    val BackgroundDark = Color(0xFF262C3A) //Fondo oscuro seccion inferior
 }
 
 @Composable
 fun CharacterInfoCard(character: Character) {
+    // Tarjeta principal que envuelve el contenido
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,28 +42,35 @@ fun CharacterInfoCard(character: Character) {
         )
     ) {
         Column {
-            // Sección superior: Imagen y Nombre/Estado
+            //Primera seccion: imagen y datos principales
             Row(modifier = Modifier.height(150.dp)) {
-                // Imagen (lado izquierdo) - Ancho fijo en lugar de proporcional
+                //Imagen (lado izquierdo) - Ancho fijo
                 Box(
                     modifier = Modifier
-                        .width(120.dp)  // Ancho fijo para la imagen
+                        .width(120.dp)
                         .fillMaxHeight()
                 ) {
+                    //Carga de imagen asyncrona con KamelImage
                     KamelImage(
                         resource = asyncPainterResource(character.image),
-                        contentDescription = character.name,
+                        contentDescription = character.name,//descripcion para accesibilidad
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                        onLoading = { CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) },
-                        onFailure = { Text("❌", modifier = Modifier.align(Alignment.Center)) }
+                        contentScale = ContentScale.Crop, //recorta para llenar contenedor
+                        onLoading = {
+                            //Indicador de carga centrado
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)
+                            ) },
+                        onFailure = {
+                            //Mostrar X si falla la carga
+                            Text("❌", modifier = Modifier.align(Alignment.Center)
+                            ) }
                     )
                 }
 
-                // Nombre, Estado y Especie (lado derecho) - Con fondo azul oscuro de Rick and Morty
+                //Nombre, Estado y Especie (lado derecho)
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()  // Ocupa el resto del espacio disponible
+                        .fillMaxWidth()
                         .fillMaxHeight()
                         .background(RickAndMortyColors.DarkBlue),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -72,19 +80,19 @@ fun CharacterInfoCard(character: Character) {
                             .fillMaxSize()
                             .padding(16.dp)
                     ) {
-                        // Nombre
+                        //Nombre del personaje
                         Text(
                             text = character.name,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            maxLines = 2,  // Permitir hasta 2 líneas
+                            maxLines = 2,  //Permitir hasta 2 líneas
                             overflow = TextOverflow.Ellipsis,
                             color = Color.White
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Estado
+                        //Fila con punto de color y estado
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -101,8 +109,9 @@ fun CharacterInfoCard(character: Character) {
                             )
                         }
 
-                        // Especie (Raza)
                         Spacer(modifier = Modifier.weight(1f))
+
+                        //Especie (Raza) alineada al final
                         Text(
                             text = character.species,
                             style = MaterialTheme.typography.bodyMedium,
@@ -114,7 +123,7 @@ fun CharacterInfoCard(character: Character) {
                 }
             }
 
-            // Sección inferior: Información adicional - Con color verde portal de Rick and Morty
+            //Segunda seccion: origen, ubicacion y tipo
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -124,15 +133,27 @@ fun CharacterInfoCard(character: Character) {
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Origen
-                    InfoRow(title = "Origen:", value = character.origin.name, color = RickAndMortyColors.PortalGreen)
+                    //Origen
+                    InfoRow(
+                        title = "Origen:",
+                        value = character.origin.name,
+                        color = RickAndMortyColors.PortalGreen
+                    )
 
-                    // Ubicación
-                    InfoRow(title = "Ubicación:", value = character.location.name, color = RickAndMortyColors.LightBlue)
+                    //Ubicacion
+                    InfoRow(
+                        title = "Ubicación:",
+                        value = character.location.name,
+                        color = RickAndMortyColors.LightBlue
+                    )
 
-                    // Tipo (solo si existe)
+                    //Tipo (solo si existe)
                     if (character.type.isNotEmpty()) {
-                        InfoRow(title = "Tipo:", value = character.type, color = RickAndMortyColors.Yellow)
+                        InfoRow(
+                            title = "Tipo:",
+                            value = character.type,
+                            color = RickAndMortyColors.Yellow
+                        )
                     }
                 }
             }
@@ -140,9 +161,9 @@ fun CharacterInfoCard(character: Character) {
     }
 }
 
+//Composable para mostrar un par titulo-valor en columna
 @Composable
 private fun InfoRow(title: String, value: String, color: Color) {
-    // Cambiamos de Row a Column para mostrar el título y valor en líneas separadas
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = title,
@@ -154,17 +175,18 @@ private fun InfoRow(title: String, value: String, color: Color) {
             text = value,
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            maxLines = 2,  // Permitir hasta 2 líneas para el valor
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             color = Color.White
         )
     }
 }
 
+//Determina el color segun estado
 private fun getStatusColor(status: String): Color {
     return when (status.lowercase()) {
-        "alive" -> RickAndMortyColors.PortalGreen  // Verde del portal para vivo
-        "dead" -> Color(0xFFF44336)                // Rojo para muerto
-        else -> Color(0xFF9E9E9E)                  // Gris para desconocido
+        "alive" -> RickAndMortyColors.PortalGreen// Verde para vivo
+        "dead" -> Color(0xFFF44336)//Rojo para muerto
+        else -> Color(0xFF9E9E9E)//Gris para desconocido
     }
 }
