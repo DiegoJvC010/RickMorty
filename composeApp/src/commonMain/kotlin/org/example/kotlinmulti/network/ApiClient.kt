@@ -1,60 +1,47 @@
 package org.example.kotlinmulti.network
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
-import org.example.kotlinmulti.model.Character
-import org.example.kotlinmulti.model.CharacterResponse
+import io.ktor.client.HttpClient //cliente http principal de ktor
+import io.ktor.client.call.body //extension para obtener cuerpo de la respuesta
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation //plugin para negociar contenido json
+import io.ktor.client.request.get //funcion para realizar peticiones GET
+import io.ktor.serialization.kotlinx.json.json //adaptador json para ktor
+import kotlinx.serialization.json.Json //configuracion de serializacion JSON
+import org.example.kotlinmulti.model.CharacterResponse //modelo de datos para la respuesta
 
+//un singleton que se encarga de comunicarse con la API de Rick and Morty
 object ApiClient {
+    //inicializa el cliente http con soporte para JSON
     private val client = HttpClient {
         install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
+            json(Json {
+                ignoreUnknownKeys = true //ignora campos extras en la respuesta
+            })
         }
     }
 
-    /** Fetch a single page, con opcionales filtros */
+    //fetchPage recupera una pagina de personajes con filtros opcionales
     suspend fun fetchPage(
-        page: Int,
-        name: String? = null,
-        status: String? = null,
-        species: String? = null,
-        type: String? = null,
-        gender: String? = null
+        page: Int, //numero de pagina (inicia en 1)
+        name: String? = null, //filtro por nombre (coincidencia parcial)
+        status: String? = null //filtro por estado: "alive", "dead" o "unknown"
     ): CharacterResponse {
-        // Construir query string dinámico
-        val base = "https://rickandmortyapi.com/api/character"
-        val params = listOfNotNull(
-            "page=$page",
-            name?.let { "name=${it}" },
-            status?.let { "status=${it.lowercase()}" },
-            species?.let { "species=${it}" },
-            type?.let { "type=${it}" },
-            gender?.let { "gender=${it.lowercase()}" }
-        ).joinToString("&")
-        val url = "$base?$params"
-        return client.get(url).body()
-    }
+        //endpoint base de personajes
+        val baseUrl = "https://rickandmortyapi.com/api/character"
 
-    /** Recupera *todos* los personajes que cumplan el filtro */
-    suspend fun fetchAllCharacters(
-        name: String? = null,
-        status: String? = null,
-        species: String? = null,
-        type: String? = null,
-        gender: String? = null
-    ): List<Character> {
-        // Primera página para saber cuántas vienen
-        val first = fetchPage(1, name, status, species, type, gender)
-        val acc = mutableListOf<Character>().apply { addAll(first.results) }
-        // Si hay más páginas, recorrerlas en paralelo o secuencialmente
-        for (p in 2..first.info.pages) {
-            val resp = fetchPage(p, name, status, species, type, gender)
-            acc += resp.results
-        }
-        return acc
+        //arma la lista de parametros de query
+        val queryParams = listOfNotNull(
+            "page=$page", //pagina obligatoria
+            name?.takeIf { it.isNotBlank() }?.let { "name=$it" }, //agrega filtro nombre si existe
+            status?.let { "status=${it.lowercase()}" } //agrega filtro estado si existe
+        )
+
+        //une parametros con '&'
+        val queryString = queryParams.joinToString("&")
+
+        //construye la url completa
+        val fullUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
+
+        //realiza peticion GET y convierte JSON a CharacterResponse
+        return client.get(fullUrl).body()
     }
 }
