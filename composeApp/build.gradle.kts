@@ -87,9 +87,6 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
                 // Ktor Android engine (3.1.3)
                 implementation("io.ktor:ktor-client-okhttp:3.1.3")
-
-                // Coil para Android (si quieres)
-                implementation("io.coil-kt:coil-compose:2.3.0")
             }
         }
 
