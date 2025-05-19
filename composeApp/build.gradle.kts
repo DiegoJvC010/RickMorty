@@ -9,12 +9,10 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 repositories {
     google()
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
@@ -58,9 +56,6 @@ kotlin {
                 implementation(compose.material)
                 implementation(compose.material3)
                 implementation(compose.ui)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
-
 
                 // Ktor Client core + JSON (3.1.3)
                 implementation("io.ktor:ktor-client-core:3.1.3")
@@ -73,10 +68,6 @@ kotlin {
                 // Carga de imágenes multiplataforma (Kamel 1.0.5)
                 implementation("media.kamel:kamel-image-default:1.0.5")
                 implementation(compose.materialIconsExtended)
-
-                // Lifecycle (opcional, si lo usas)
-                implementation(libs.androidx.lifecycle.viewmodel)
-                implementation(libs.androidx.lifecycle.runtimeCompose)
             }
         }
 
