@@ -58,6 +58,7 @@ fun CharacterListScreen() {
                 currentPage = page
             } catch (e: Exception) {
                 //En caso de error, mostrar pantalla de error y limpiar lista
+                println("Excepcion***********--------*******: ${e::class.simpleName} – ${e.message}")
                 hasError = true
                 characters = emptyList()
             } finally {
