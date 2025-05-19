@@ -9,21 +9,24 @@ import org.example.kotlinmulti.ui.CharacterListScreen
 
 @Composable
 fun App() {
-    // Esquema de colores personalizado para Rick and Morty
+    //define un esquema de colores claro personalizado
     val colorScheme = lightColorScheme(
-        primary = Color(0xFF97CE4C),         // Verde Rick and Morty
+        primary = Color(0xFF97CE4C),
         onPrimary = Color.White,
-        primaryContainer = Color(0xFF3C3E44), // Gris oscuro
+        primaryContainer = Color(0xFF3C3E44),
         onPrimaryContainer = Color.White,
-        secondary = Color(0xFF00B5CC),        // Azul portal
+        secondary = Color(0xFF00B5CC),
         onSecondary = Color.White,
-        tertiary = Color(0xFFFF9800),         // Naranja
+        tertiary = Color(0xFFFF9800),
         background = Color(0xFFF5F5F5),
         surface = Color.White
     )
 
+    //aplica el esquema de colores a toda la app
     MaterialTheme(colorScheme = colorScheme) {
+        //surface actua como contenedor principal respetando el tema
         Surface {
+            //invoca la pantalla que muestra la lista de personajes
             CharacterListScreen()
         }
     }
