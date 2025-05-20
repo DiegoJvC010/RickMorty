@@ -143,39 +143,3 @@ compose.desktop {
 
     }
 }
-
-//Crea una tarea llamada "packageWasmJsDist" de tipo Copy
-tasks.register<Copy>("packageWasmJsDist") {
-    //Clasifica esta tarea bajo el grupo "distribution"
-    group = "distribution"
-    // Explica su finalidad al listar tareas
-    description = "Reune binarios WASM, módulos JS de Skiko y recursos estáticos en build/dist/wasmJs para deploy web estático"
-    //1) Garantiza que la compilacion WASM en modo produccion haya terminado
-    //Esto produce los archivos .wasm y los modulos .mjs en la carpeta de compileSync
-    dependsOn("wasmJsProductionExecutableCompileSync")
-
-    //Orígenes de los archivos a copiar:
-
-    //2.1) Artefactos de Kotlin/JS targeting WASM:
-    //build/compileSync/wasmJs/main/productionExecutable/kotlin
-    from("$buildDir/compileSync/wasmJs/main/productionExecutable/kotlin") {
-        include("*.wasm", "*.wasm.map", "*.mjs", "*.uninstantiated.mjs")
-    }
-
-    //2.2)Runtime grafico Skiko para web:
-    //Compose usa Skiko para dibujar en canvas/WebGL
-    //build/compose/skiko-for-web-runtime
-    from("$buildDir/compose/skiko-for-web-runtime") {
-        include("skiko.js", "skiko.mjs", "skiko.wasm", "skikod8.mjs")
-    }
-
-    //2.3) Recursos estaticos definidos en src/wasmJsMain/resources:
-    //build/processedResources/wasmJs/main
-    from("$buildDir/processedResources/wasmJs/main") {
-        include("*.html", "*.css")
-    }
-
-    //3) Carpeta destino:
-    //build/dist/wasmJs contendra todillo lo necesario para servir la app estatica
-    into("$buildDir/dist/wasmJs")
-}
